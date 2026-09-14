@@ -1,0 +1,19 @@
+{
+  "name": "AI Day & Week Planner",
+  "short_name": "Planner",
+  "description": "A personal AI planner for day and week scheduling.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#edf7ff",
+  "theme_color": "#3a86ff",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

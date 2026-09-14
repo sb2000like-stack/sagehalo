@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="title desc">
+  <title id="title">AI Day and Week Planner logo</title>
+  <desc id="desc">A calendar with a rising spark</desc>
+  <defs>
+    <linearGradient id="logoGradient" x1="12" y1="10" x2="84" y2="86" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3a86ff"/>
+      <stop offset="1" stop-color="#72d2ff"/>
+    </linearGradient>
+  </defs>
+  <rect x="10" y="16" width="76" height="70" rx="18" fill="url(#logoGradient)"/>
+  <path d="M27 11v16M69 11v16M20 36h56" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="7"/>
+  <path d="m47 48 4.6 9.4L61 62l-9.4 4.6L47 76l-4.6-9.4L33 62l9.4-4.6L47 48Z" fill="#ffcf5c" stroke="#fff" stroke-linejoin="round" stroke-width="3"/>
+</svg>

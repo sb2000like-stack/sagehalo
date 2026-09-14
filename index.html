@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Day & Week Planner</title>
+    <meta name="description" content="Personal AI planner for day and week scheduling." />
+      <meta name="theme-color" content="#3a86ff" />
+      <meta name="mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-capable" content="yes" />
+      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <link rel="icon" type="image/svg+xml" href="logo.svg" />
+      <link rel="manifest" href="manifest.json" />
+      <link rel="apple-touch-icon" href="logo.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar glass">
+        <div class="brand-lockup">
+          <img class="brand-logo" src="logo.svg" alt="AI Day and Week Planner logo" />
+          <div>
+            <p class="eyebrow">AI Day &amp; Week Planner</p>
+            <h1 id="greetingText">Good morning</h1>
+          </div>
+        </div>
+        <div class="topbar-actions">
+          <button id="installAppButton" class="ghost-button hidden">Install app</button>
+          <button id="themePreviewButton" class="ghost-button">Theme</button>
+        </div>
+      </header>
+
+      <main class="page active" id="home-page">
+        <section class="hero glass">
+          <p class="muted">What would you like to do today?</p>
+          <div class="hero-actions">
+            <button class="primary-button" data-open-ai>Ask <span id="aiNameBadge">Nova</span></button>
+            <button class="ghost-button" id="newPlanButton">Plan My Day</button>
+          </div>
+        </section>
+
+        <section class="quick-actions">
+          <button class="quick-button" data-quick="Plan my day">Plan My Day</button>
+          <button class="quick-button" data-quick="Plan my week">Plan My Week</button>
+          <button class="quick-button" data-quick="Find something fun nearby">Find Something To Do</button>
+          <button class="quick-button" data-quick="Plan a cheap day">Plan a Cheap Day</button>
+          <button class="quick-button" data-quick="Plan a relaxing day">Plan a Relaxing Day</button>
+          <button class="quick-button" data-quick="Plan an adventure">Plan an Adventure</button>
+        </section>
+
+        <section class="summary-card card glass">
+          <div class="section-header">
+            <h2>Today</h2>
+            <button class="text-button" id="todayGenerateButton">Generate</button>
+          </div>
+          <div id="homeSummary" class="summary-list"></div>
+        </section>
+      </main>
+
+      <main class="page" id="today-page">
+        <section class="card glass planner-form-panel">
+          <div class="section-header">
+            <h2>Day Planner</h2>
+          </div>
+          <div class="planner-form-grid">
+            <label>
+              <span>Prompt</span>
+              <textarea id="dayPromptInput" rows="3" placeholder="I have the day off and want a fun day under $50."></textarea>
+            </label>
+            <div class="split-row">
+              <label>
+                <span>Budget</span>
+                <input id="budgetInput" type="number" min="0" step="5" value="40" />
+              </label>
+              <label>
+                <span>Vibe</span>
+                <select id="vibeInput">
+                  <option value="productive">Productive</option>
+                  <option value="relaxing">Relaxing</option>
+                  <option value="fun">Fun</option>
+                  <option value="social">Social</option>
+                  <option value="adventurous">Adventurous</option>
+                  <option value="family-friendly">Family-friendly</option>
+                  <option value="outdoors">Outdoors</option>
+                </select>
+              </label>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="generateDayPlanButton" class="primary-button">Generate Schedule</button>
+          </div>
+        </section>
+
+        <section class="card glass">
+          <div class="section-header">
+            <h2>Planned Activities</h2>
+          </div>
+          <div id="dayPlanList" class="activity-list"></div>
+        </section>
+      </main>
+
+      <main class="page" id="week-page">
+        <section class="card glass week-panel">
+          <div class="section-header">
+            <h2>Week Planner</h2>
+            <button id="generateWeekPlanButton" class="primary-button small">Plan Week</button>
+          </div>
+
+          <div class="planner-form-grid">
+            <label>
+              <span>What kinds of things do you like?</span>
+              <input id="weekLikesInput" type="text" placeholder="coffee, hikes, workouts, museums..." />
+            </label>
+            <div class="split-row">
+              <label>
+                <span>Workout days per week</span>
+                <input id="workoutDaysInput" type="number" min="0" max="7" value="3" />
+              </label>
+              <label>
+                <span>Extra preferences</span>
+                <input id="weekExtrasInput" type="text" placeholder="keep Friday open, one rest day, low budget..." />
+              </label>
+            </div>
+          </div>
+
+          <div id="weekGrid" class="week-grid"></div>
+        </section>
+      </main>
+
+      <main class="page" id="ai-page">
+        <section class="card glass ai-panel">
+          <div class="section-header">
+            <h2>AI Assistant</h2>
+          </div>
+          <div id="aiChat" class="chat-thread"></div>
+          <p class="muted ai-status" id="aiStatus">Add an OpenAI API key in Settings to enable live AI answers.</p>
+          <div class="chat-input-row">
+            <input id="chatInput" type="text" placeholder="Ask your planner..." />
+            <button id="sendChatButton" class="primary-button small">Send</button>
+          </div>
+        </section>
+      </main>
+
+      <main class="page" id="settings-page">
+        <section class="card glass settings-group">
+          <div class="section-header">
+            <h2>Profile</h2>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Name</span>
+              <input id="profileNameInput" type="text" />
+            </label>
+            <label>
+              <span>Location</span>
+              <div class="location-field">
+                <input id="locationInput" type="text" placeholder="City, state or ZIP" />
+                <button type="button" id="useMyLocationButton" class="ghost-button small">Use my location</button>
+              </div>
+            </label>
+            <label>
+              <span>Interests</span>
+              <input id="interestsInput" type="text" />
+            </label>
+            <label>
+              <span>Transportation</span>
+              <select id="transportInput">
+                <option value="Car">Car</option>
+                <option value="Walking">Walking</option>
+                <option value="Bicycle">Bicycle</option>
+                <option value="Public transportation">Public transportation</option>
+                <option value="Rideshare">Rideshare</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+        </section>
+
+        <section class="card glass settings-group">
+          <div class="section-header">
+            <h2>AI</h2>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>AI Name</span>
+              <input id="aiNameInput" type="text" />
+            </label>
+            <label>
+              <span>AI provider</span>
+              <select id="aiProviderInput">
+                <option value="free">Free AI (no key needed)</option>
+                <option value="openai">OpenAI</option>
+              </select>
+            </label>
+            <label>
+              <span>OpenAI API key</span>
+              <input id="openAiKeyInput" type="password" autocomplete="off" placeholder="sk-..." />
+              <small class="muted">For this browser prototype only. Use a server-side key before publishing.</small>
+            </label>
+            <label>
+              <span>Personality</span>
+              <select id="personalityInput">
+                <option value="Friendly">Friendly</option>
+                <option value="Professional">Professional</option>
+                <option value="Casual">Casual</option>
+                <option value="Funny">Funny</option>
+                <option value="Motivational">Motivational</option>
+                <option value="Calm">Calm</option>
+                <option value="Direct">Direct</option>
+              </select>
+            </label>
+            <label>
+              <span>Greeting</span>
+              <input id="greetingInput" type="text" />
+            </label>
+          </div>
+        </section>
+
+        <section class="card glass settings-group">
+          <div class="section-header">
+            <h2>Appearance</h2>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Theme</span>
+              <select id="themeInput">
+                <option value="Ocean">Ocean</option>
+                <option value="Forest">Forest</option>
+                <option value="Sunset">Sunset</option>
+                <option value="Lavender">Lavender</option>
+                <option value="Minimal">Minimal</option>
+                <option value="Dark">Dark</option>
+                <option value="High Contrast">High Contrast</option>
+              </select>
+            </label>
+            <label>
+              <span>Font</span>
+              <select id="fontInput">
+                <option value="Inter">Inter</option>
+                <option value="Atkinson Hyperlegible">Atkinson Hyperlegible</option>
+                <option value="Segoe UI">Segoe UI</option>
+              </select>
+            </label>
+            <label>
+              <span>Text size</span>
+              <input id="textSizeInput" type="range" min="14" max="22" step="1" />
+            </label>
+          </div>
+        </section>
+
+        <section class="card glass settings-group">
+          <div class="section-header">
+            <h2>Accessibility</h2>
+          </div>
+          <div class="toggle-list">
+            <label class="toggle-item"><input id="dyslexiaToggle" type="checkbox" /> Dyslexia-friendly mode</label>
+            <label class="toggle-item"><input id="highContrastToggle" type="checkbox" /> High contrast</label>
+            <label class="toggle-item"><input id="reducedMotionToggle" type="checkbox" /> Reduced motion</label>
+            <label class="toggle-item"><input id="simpleLanguageToggle" type="checkbox" /> Simple language</label>
+          </div>
+        </section>
+
+        <section class="card glass settings-group">
+          <div class="section-header">
+            <h2>Planning</h2>
+          </div>
+          <div class="settings-grid">
+            <label>
+              <span>Daily budget</span>
+              <input id="dailyBudgetInput" type="number" min="0" step="5" />
+            </label>
+            <label>
+              <span>Preferred wake time</span>
+              <input id="wakeTimeInput" type="time" />
+            </label>
+            <label>
+              <span>Preferred bedtime</span>
+              <input id="bedtimeInput" type="time" />
+            </label>
+          </div>
+        </section>
+
+        <div class="button-row full-width">
+          <button id="saveSettingsButton" class="primary-button">Save Settings</button>
+        </div>
+      </main>
+    </div>
+
+    <nav class="bottom-nav glass" aria-label="Main navigation">
+      <button class="nav-button active" data-page="home-page">Home</button>
+      <button class="nav-button" data-page="today-page">Today</button>
+      <button class="nav-button" data-page="week-page">Week</button>
+      <button class="nav-button ai-nav" data-page="ai-page">AI</button>
+      <button class="nav-button" data-page="settings-page">Settings</button>
+    </nav>
+
+    <div id="onboardingModal" class="modal hidden" aria-modal="true" role="dialog">
+      <div class="modal-card glass">
+        <h2>Welcome</h2>
+        <form id="onboardingForm">
+          <div class="onboarding-step active" data-step="1">
+            <label>
+              <span>What's your name?</span>
+              <input name="name" type="text" placeholder="Jamie" />
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="2">
+            <label>
+              <span>What would you like to call your AI assistant?</span>
+              <input name="aiName" type="text" placeholder="Nova" />
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="3">
+            <label>
+              <span>Where do you live?</span>
+              <div class="location-field">
+                <input name="location" type="text" placeholder="Seattle, WA 98101" />
+                <button type="button" id="onboardingLocationButton" class="ghost-button small">Use my location</button>
+              </div>
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="4">
+            <label>
+              <span>How do you usually get around?</span>
+              <select name="transportation">
+                <option value="Car">Car</option>
+                <option value="Walking">Walking</option>
+                <option value="Bicycle">Bicycle</option>
+                <option value="Public transportation">Public transportation</option>
+                <option value="Rideshare">Rideshare</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="5">
+            <label>
+              <span>What do you like doing?</span>
+              <input name="interests" type="text" placeholder="Coffee, parks, museums, fitness" />
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="6">
+            <label>
+              <span>How would you like your AI to talk to you?</span>
+              <select name="personality">
+                <option value="Friendly">Friendly</option>
+                <option value="Professional">Professional</option>
+                <option value="Casual">Casual</option>
+                <option value="Funny">Funny</option>
+                <option value="Calm">Calm</option>
+                <option value="Motivational">Motivational</option>
+              </select>
+            </label>
+          </div>
+          <div class="onboarding-step" data-step="7">
+            <label>
+              <span>Customize your app</span>
+              <select name="theme">
+                <option value="Ocean">Ocean</option>
+                <option value="Forest">Forest</option>
+                <option value="Sunset">Sunset</option>
+                <option value="Lavender">Lavender</option>
+                <option value="Dark">Dark</option>
+                <option value="Minimal">Minimal</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="form-nav">
+            <button type="button" class="ghost-button" id="prevStepButton">Back</button>
+            <button type="button" class="primary-button" id="nextStepButton">Next</button>
+            <button type="submit" class="primary-button hidden" id="submitOnboardingButton">Finish</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id="toast" class="toast hidden" aria-live="polite"></div>
+
+    <script src="app.js"></script>
+  </body>
+</html>
